@@ -37,11 +37,6 @@ jobs:
           cd dashboard
           npm run build
       
-      - name: Add Android platform
-        run: |
-          cd dashboard
-          npx cap add android
-      
       - name: Sync Capacitor
         run: |
           cd dashboard
