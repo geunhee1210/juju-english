@@ -1,0 +1,82 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Install dependencies (Dashboard)
+        run: |
+          cd dashboard
+          npm install
+      
+      - name: Build web app
+        run: |
+          cd dashboard
+          npm run build
+      
+      - name: Sync Capacitor
+        run: |
+          cd dashboard
+          npx cap sync android
+      
+      - name: Make gradlew executable
+        run: chmod +x dashboard/android/gradlew
+      
+      - name: Build Debug APK
+        run: |
+          cd dashboard/android
+          ./gradlew assembleDebug
+      
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: juju-english-debug
+          path: dashboard/android/app/build/outputs/apk/debug/app-debug.apk
+      
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0
+          name: 주주잉글리시 v1.0.0
+          body: |
+            ## 📱 주주잉글리시 - 애니메이션 프로젝트 관리 앱
+            
+            ### 다운로드
+            아래 **app-debug.apk** 파일을 다운로드하여 설치하세요.
+            
+            ### 설치 방법
+            1. APK 파일 다운로드
+            2. "알 수 없는 출처" 앱 설치 허용
+            3. APK 파일 실행하여 설치
+            
+            ### 주요 기능
+            - 📊 30개 에피소드 진행 현황 대시보드
+            - 📅 월별 납품 일정 관리
+            - 🎬 6단계 워크플로우 (누끼→배경→리깅→애니메이션→오디오→렌더)
+            - 💬 클라이언트 피드백 관리
+            - 📱 모바일 최적화 UI
+          files: dashboard/android/app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
