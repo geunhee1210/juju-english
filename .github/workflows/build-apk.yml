@@ -24,6 +24,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      
       - name: Install dependencies (Dashboard)
         run: |
           cd dashboard
@@ -33,6 +36,11 @@ jobs:
         run: |
           cd dashboard
           npm run build
+      
+      - name: Add Android platform
+        run: |
+          cd dashboard
+          npx cap add android
       
       - name: Sync Capacitor
         run: |
@@ -57,8 +65,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.0
-          name: 주주잉글리시 v1.0.0
+          tag_name: v1.0.${{ github.run_number }}
+          name: 주주잉글리시 v1.0.${{ github.run_number }}
           body: |
             ## 📱 주주잉글리시 - 애니메이션 프로젝트 관리 앱
             
@@ -79,4 +87,3 @@ jobs:
           files: dashboard/android/app/build/outputs/apk/debug/app-debug.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
