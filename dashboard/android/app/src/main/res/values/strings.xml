@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">주주잉글리시</string>
+    <string name="title_activity_main">주주잉글리시</string>
+    <string name="package_name">com.jujuenglish.studio</string>
+    <string name="custom_url_scheme">com.jujuenglish.studio</string>
+</resources>
